@@ -76,21 +76,21 @@ export const CATALOG = [
   },
   {
     id: 'clove',
-    name: 'Clove Buds',
+    name: 'Cloves',
     latin: 'Syzygium aromaticum',
     accent: '#a35f37',
-    tagline: 'Whole Unbroken Buds',
+    tagline: 'Whole Unbroken',
     origin: 'Malabar Coast',
-    grade: 'SHS / Mother Buds',
+    grade: 'SHS / Hand Sorted',
     specs: [
       ['Moisture', 'Below 10%'],
       ['Eugenol', '15 – 20%'],
-      ['Form', 'Whole buds'],
+      ['Form', 'Whole cloves'],
     ],
     price: 1450,
     unit: 'per kg',
     blurb:
-      'Picked unopened while still pink, then slow-dried so the bud keeps its snap. Nothing ground, nothing bleached — the oils stay where nature put them.',
+      'Picked while still pink and slow-dried on racks so each clove keeps its snap. Nothing ground, nothing bleached — the oils stay where nature put them.',
     notes: ['Eugenol', 'Warm honey', 'Dried fruit', 'Heat'],
     meters: [
       ['Aroma', 95],
@@ -357,15 +357,16 @@ function cardamomTexture(seed) {
   const { c, ctx, size } = canvas2d(S, { readback: true });
   const r = rng(seed);
 
-  // Straw at the beak, deep olive at the stem - and never one flat colour: a
-  // dried husk mottles unevenly as it loses moisture.
+  // Green cardamom is GREEN — a bright, slightly yellow grass green at the
+  // beak settling into a deeper leaf green at the stem. The earlier ramp ran
+  // straw-to-olive and read as a dried pod rather than a fresh green one.
   const grad = ctx.createLinearGradient(0, 0, 0, size);
-  grad.addColorStop(0.0, '#dcd9a4');
-  grad.addColorStop(0.1, '#cbcfa0');
-  grad.addColorStop(0.34, '#a6b96d');
-  grad.addColorStop(0.62, '#84a255');
-  grad.addColorStop(0.86, '#67863f');
-  grad.addColorStop(1.0, '#4f6d31');
+  grad.addColorStop(0.0, '#bfe07a');
+  grad.addColorStop(0.1, '#a9d965');
+  grad.addColorStop(0.34, '#8ecc52');
+  grad.addColorStop(0.62, '#71bb46');
+  grad.addColorStop(0.86, '#57a83d');
+  grad.addColorStop(1.0, '#439136');
   ctx.fillStyle = grad;
   ctx.fillRect(0, 0, size, size);
 
@@ -379,8 +380,8 @@ function cardamomTexture(seed) {
     g.addColorStop(
       0,
       pale
-        ? `rgba(${r.int(214, 236)},${r.int(216, 234)},${r.int(150, 186)},${r.range(0.05, 0.16)})`
-        : `rgba(${r.int(70, 102)},${r.int(92, 126)},${r.int(42, 68)},${r.range(0.05, 0.17)})`,
+        ? `rgba(${r.int(196, 226)},${r.int(226, 244)},${r.int(150, 190)},${r.range(0.05, 0.16)})`
+        : `rgba(${r.int(64, 96)},${r.int(118, 156)},${r.int(56, 92)},${r.range(0.05, 0.17)})`,
     );
     g.addColorStop(1, 'rgba(0,0,0,0)');
     ctx.fillStyle = g;
@@ -413,8 +414,8 @@ function cardamomTexture(seed) {
     const x = r.range(0, size);
     const light = r.next() > 0.5;
     ctx.strokeStyle = light
-      ? `rgba(${r.int(208, 238)},${r.int(214, 240)},${r.int(152, 194)},${r.range(0.04, 0.13)})`
-      : `rgba(${r.int(74, 106)},${r.int(92, 124)},${r.int(44, 70)},${r.range(0.05, 0.16)})`;
+      ? `rgba(${r.int(216, 244)},${r.int(240, 252)},${r.int(176, 216)},${r.range(0.04, 0.13)})`
+      : `rgba(${r.int(78, 114)},${r.int(126, 166)},${r.int(58, 96)},${r.range(0.05, 0.16)})`;
     ctx.lineWidth = r.range(0.6, 2.6);
     ctx.beginPath();
     ctx.moveTo(x, 0);
@@ -429,29 +430,31 @@ function cardamomTexture(seed) {
     ctx.stroke();
   }
 
-  // Brown lenticel specks and drying scars.
-  for (let i = 0; i < 1800; i++) {
+  // Brown lenticel specks and drying scars — sparse, they are blemishes on a
+  // green pod, not the base colour.
+  for (let i = 0; i < 900; i++) {
     const x = r.range(0, size);
     const y = r.range(0, size);
-    const rad = r.range(0.6, 3.4) * (size / 512);
-    ctx.fillStyle = `rgba(${r.int(84, 138)},${r.int(72, 112)},${r.int(34, 62)},${r.range(0.06, 0.34)})`;
+    const rad = r.range(0.6, 3.0) * (size / 512);
+    ctx.fillStyle = `rgba(${r.int(96, 138)},${r.int(112, 152)},${r.int(52, 86)},${r.range(0.05, 0.26)})`;
     ctx.beginPath();
     ctx.ellipse(x, y, rad, rad * r.range(1, 2.6), r.range(0, TAU), 0, TAU);
     ctx.fill();
   }
 
-  // The beak bleaches to straw and the stem collar browns off first.
-  const tip = ctx.createLinearGradient(0, 0, 0, size * 0.14);
-  tip.addColorStop(0, 'rgba(234,226,178,0.55)');
-  tip.addColorStop(1, 'rgba(234,226,178,0)');
+  // A whisper of straw at the very beak and a touch of shade at the stem —
+  // both subtle enough that the pod still reads unmistakably green.
+  const tip = ctx.createLinearGradient(0, 0, 0, size * 0.12);
+  tip.addColorStop(0, 'rgba(226,238,168,0.34)');
+  tip.addColorStop(1, 'rgba(226,238,168,0)');
   ctx.fillStyle = tip;
-  ctx.fillRect(0, 0, size, size * 0.14);
+  ctx.fillRect(0, 0, size, size * 0.12);
 
-  const base = ctx.createLinearGradient(0, size * 0.84, 0, size);
-  base.addColorStop(0, 'rgba(96,74,40,0)');
-  base.addColorStop(1, 'rgba(88,66,34,0.55)');
+  const base = ctx.createLinearGradient(0, size * 0.86, 0, size);
+  base.addColorStop(0, 'rgba(52,96,44,0)');
+  base.addColorStop(1, 'rgba(46,88,42,0.4)');
   ctx.fillStyle = base;
-  ctx.fillRect(0, size * 0.84, size, size * 0.16);
+  ctx.fillRect(0, size * 0.86, size, size * 0.14);
 
   return c;
 }
@@ -546,15 +549,16 @@ function cloveTexture(seed) {
   const r = rng(seed);
 
   // Canvas top = the crown (four sepals), bottom = the stalk tip.
-  // A dried clove is deep reddish-brown, darkest at the crown and the neck,
-  // a shade warmer and lighter across the belly where the oil sits.
+  // A dried clove is deep reddish-brown, darkest at the crown and at the stalk
+  // tip, warmest across the belly of the head where the oil sits. The head only
+  // owns the top 40% of the texture now that the stalk owns the rest.
   const grad = ctx.createLinearGradient(0, 0, 0, size);
   grad.addColorStop(0.0, '#2a1409');
-  grad.addColorStop(0.1, '#3d1f10');
-  grad.addColorStop(0.3, '#5a2d16');
-  grad.addColorStop(0.55, '#6e3a1d');
-  grad.addColorStop(0.72, '#5e3118');
-  grad.addColorStop(0.88, '#48230f');
+  grad.addColorStop(0.1, '#452211');
+  grad.addColorStop(0.26, '#6e3a1d');
+  grad.addColorStop(0.4, '#5c2f17');
+  grad.addColorStop(0.66, '#4d2813');
+  grad.addColorStop(0.86, '#3d1f0e');
   grad.addColorStop(1.0, '#331809');
   ctx.fillStyle = grad;
   ctx.fillRect(0, 0, size, size);
@@ -623,14 +627,14 @@ function cloveTexture(seed) {
     g.addColorStop(0.5, 'rgba(16,8,4,0.62)');
     g.addColorStop(1, 'rgba(20,10,5,0)');
     ctx.fillStyle = g;
-    ctx.fillRect(x - 26, 0, 52, size * 0.13);
+    ctx.fillRect(x - 26, 0, 52, size * 0.1);
   }
   // Dark cap over the crown itself.
-  const cap = ctx.createLinearGradient(0, 0, 0, size * 0.1);
+  const cap = ctx.createLinearGradient(0, 0, 0, size * 0.08);
   cap.addColorStop(0, 'rgba(14,7,3,0.72)');
   cap.addColorStop(1, 'rgba(14,7,3,0)');
   ctx.fillStyle = cap;
-  ctx.fillRect(0, 0, size, size * 0.1);
+  ctx.fillRect(0, 0, size, size * 0.08);
 
   // Dusty bloom - sun-dried buds are never glossy, and the stalk carries the
   // most of it.
@@ -934,42 +938,42 @@ function buildPeppercorn({ radius = 0.28, seed = 3 } = {}) {
 }
 
 /**
- * A clove: a hair-fine stem, a sharp neck, and a long ovoid head whose crown
- * closes into four short sepal points.
+ * A clove: a long, slender stalk carrying a small round head of unopened
+ * petals, with four tiny sepal teeth at the crown.
  *
- * The earlier proportion had the head at roughly a third of the length, which
- * silhouetted as a carrot with a bulb on the end. Real dried cloves are more
- * than half head, and the stem is almost a hair — that thin-to-fat jump is the
- * whole silhouette.
+ * The proportion is the whole point. A clove is sold as the nail-shaped spice
+ * — roughly two thirds thin stalk, one third ball — so the head is only about
+ * a third of the length and barely three times the stalk's width. The earlier
+ * build made the head more than half the length, which read as a bud on a hair
+ * rather than a clove.
  */
 function buildClove({ length = 1, seed = 11 } = {}) {
   const noise = makeNoise3D(seed);
 
-  const HEAD_R = 0.172;
+  const HEAD_R = 0.145; // head radius, ~3x the stalk
+  const HEAD_AT = 0.6; // where the stalk hands over to the head
+  const STALK_R = 0.04;
+
   const fn = (u, v, out) => {
     const th = u * TAU;
-    // v: 0 at the hair-fine tip of the stem, 1 at the crown.
+    // v: 0 at the cut end of the stalk, 1 at the crown.
     let r;
-    if (v < 0.22) {
-      // Slender stem.
-      r = lerp(0.007, 0.018, v / 0.22);
-    } else if (v < 0.36) {
-      // The neck: a fast flare from hair-thin to full head width.
-      const k = (v - 0.22) / 0.14;
-      r = lerp(0.018, HEAD_R * 0.58, Math.pow(k, 0.5));
-    } else if (v < 0.93) {
-      // The head. A full ovoid rather than a lens — a sine raised to a high
-      // power pinches both ends and the bud starts to read as a seed.
-      const k = (v - 0.36) / 0.57;
-      r = HEAD_R * Math.pow(Math.sin(Math.PI * (0.14 + k * 0.84)), 0.52);
+    if (v < HEAD_AT) {
+      // The stalk. Thin, and just slightly heavier as it meets the head.
+      r = lerp(0.026, STALK_R, v / HEAD_AT);
     } else {
-      // The crown closing over into the sepals.
-      const k = (v - 0.93) / 0.07;
-      r = lerp(HEAD_R * 0.42, HEAD_R * 0.14, k);
+      // The head: a sphere spanning the rest of the length. sqrt closes with a
+      // vertical tangent at both poles, so the ball reads round rather than
+      // pinched, and its radius overtakes the stalk within a few percent of v —
+      // that overlap is the shoulder where the two meet.
+      const k = (v - HEAD_AT) / (1 - HEAD_AT);
+      const ball = HEAD_R * Math.sqrt(Math.max(0, 1 - Math.pow(2 * k - 1, 2)));
+      r = Math.max(ball, STALK_R * Math.max(0, 1 - k * 2.4));
     }
 
-    // Fine vertical striations down the head.
-    r *= 1 + Math.cos(th * 9) * 0.035 + noise(Math.cos(th) * 2, Math.sin(th) * 2, v * 4) * 0.028;
+    // Fine vertical striations across the head, fainter down the stalk.
+    const stria = v < HEAD_AT ? 0.5 : 1;
+    r *= 1 + Math.cos(th * 9) * 0.035 * stria + noise(Math.cos(th) * 2, Math.sin(th) * 2, v * 4) * 0.028;
     // Above the crown line the four sepals pinch in.
     if (v > 0.9) {
       r *= 1 - 0.3 * Math.abs(Math.cos(th * 2)) * clamp((v - 0.9) / 0.1, 0, 1);
@@ -979,17 +983,18 @@ function buildClove({ length = 1, seed = 11 } = {}) {
     out[1] = (v - 0.42) * length;
     out[2] = Math.sin(th) * r * length;
   };
-  const bud = surfaceGeometry(fn, 44, 64);
+  const bud = surfaceGeometry(fn, 44, 72);
 
-  // Shade the striations and lift the head relative to the thin stem.
+  // Shade the striations, and keep the stalk a shade darker than the head so
+  // the two read as different parts rather than one continuous form.
   bakeVertexShade(bud, (u, v) => {
     const stria = Math.cos(u * TAU * 9) * 0.5 + 0.5;
-    const headLift = v < 0.36 ? 0.8 : 1.04;
+    const headLift = v < HEAD_AT ? 0.86 : 1.04;
     return (0.84 + 0.16 * stria) * headLift;
   });
 
-  // Four short sepal tips just proud of the crown. They are barely longer than
-  // they are wide — the tall spikes of the earlier build read as a calyx.
+  // Four tiny sepal teeth sitting on the crown. They are mostly buried in the
+  // ball with just the tips clear — a clove's crown is a notch, not a calyx.
   const sepals = [];
   for (let i = 0; i < 4; i++) {
     const s = new THREE.ConeGeometry(0.019 * length, 0.055 * length, 5, 1, true);
@@ -998,8 +1003,8 @@ function buildClove({ length = 1, seed = 11 } = {}) {
     const m = new THREE.Matrix4().makeRotationX(Math.cos(a) * 0.42);
     const m2 = new THREE.Matrix4().makeRotationZ(Math.sin(a) * 0.42);
     s.applyMatrix4(m.multiply(m2));
-    // Sit them on the crown, which is at v = 0.94 on the lathe.
-    s.translate(0, (0.94 - 0.42) * length, 0);
+    // Sit them on the crown, which is at v = 0.985 on the lathe.
+    s.translate(0, (0.985 - 0.42) * length, 0);
     sepals.push(flatVertexShade(s, 0.66));
   }
 
