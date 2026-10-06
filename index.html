@@ -1,0 +1,622 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>VAVA SPICES — The Essence of Purity</title>
+    <meta
+      name="description"
+      content="Vava Spices (P) Ltd — four decades rooted in Kerala's spice hills. Hand-graded cardamom, pepper and botanicals from the Western Ghats."
+    />
+    <meta name="theme-color" content="#07060a" />
+    <link rel="icon" type="image/png" href="assets/favicon.png" />
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600;700&family=Montserrat:wght@200;300;400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="css/style.css" />
+
+    <script type="importmap">
+      {
+        "imports": {
+          "three": "https://cdn.jsdelivr.net/npm/three@0.161.0/build/three.module.js",
+          "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.161.0/examples/jsm/"
+        }
+      }
+    </script>
+  </head>
+
+  <body class="is-loading">
+    <a class="skip-link" href="#main">Skip to content</a>
+
+    <!-- ============================================================ -->
+    <!--  Preloader                                                     -->
+    <!-- ============================================================ -->
+    <div class="preloader" id="preloader" role="status" aria-live="polite">
+      <div class="preloader__inner">
+        <img class="preloader__mark" src="assets/logo-mark.png" alt="" width="96" height="96" />
+        <div class="preloader__word">
+          <span class="preloader__vava">VAVA</span>
+          <span class="preloader__spices">Spices</span>
+        </div>
+        <div class="preloader__bar"><i id="preloaderBar"></i></div>
+        <p class="preloader__status" id="preloaderStatus">Grading the harvest</p>
+      </div>
+    </div>
+
+    <!-- ============================================================ -->
+    <!--  WebGL stage (fixed, behind everything)                        -->
+    <!-- ============================================================ -->
+    <div class="stage" aria-hidden="true">
+      <canvas id="scene"></canvas>
+      <div class="stage__grain"></div>
+      <div class="stage__vignette"></div>
+    </div>
+
+    <!-- ============================================================ -->
+    <!--  Header                                                       -->
+    <!-- ============================================================ -->
+    <header class="header" id="header">
+      <div class="header__inner">
+        <a class="brand" href="#hero" aria-label="Vava Spices, back to top">
+          <img class="brand__mark" src="assets/logo-mark.png" alt="" width="44" height="42" />
+          <span class="brand__text">
+            <span class="brand__name">VAVA</span>
+            <span class="brand__sub">Spices</span>
+          </span>
+        </a>
+
+        <nav class="nav" id="nav" aria-label="Primary">
+          <a class="nav__link is-active" href="#hero" data-nav="hero">Home</a>
+          <a class="nav__link" href="#story" data-nav="story">Our Story</a>
+          <a class="nav__link" href="#origins" data-nav="origins">Origins</a>
+          <a class="nav__link" href="#collection" data-nav="collection">Collection</a>
+          <a class="nav__link" href="#process" data-nav="process">Process</a>
+          <a class="nav__link" href="#contact" data-nav="contact">Contact</a>
+        </nav>
+
+        <div class="header__actions">
+          <button class="btn btn--ghost header__signin" type="button" data-open="auth">Sign In</button>
+          <button
+            class="cart"
+            type="button"
+            data-open="cart"
+            aria-label="Open enquiry basket"
+          >
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" aria-hidden="true">
+              <path d="M16 11V7a4 4 0 0 0-8 0v4" stroke-linecap="round" />
+              <path d="M5 9h14l1 12H4L5 9Z" stroke-linejoin="round" />
+            </svg>
+            <span class="cart__count" id="cartCount" data-empty="true">0</span>
+          </button>
+          <button
+            class="burger"
+            type="button"
+            aria-label="Open menu"
+            aria-expanded="false"
+            aria-controls="mobileNav"
+            id="burger"
+          >
+            <span></span><span></span><span></span>
+          </button>
+        </div>
+      </div>
+    </header>
+
+    <!-- Mobile navigation -->
+    <div class="mobilenav" id="mobileNav" hidden>
+      <nav class="mobilenav__list" aria-label="Mobile">
+        <a href="#hero">Home</a>
+        <a href="#story">Our Story</a>
+        <a href="#origins">Origins</a>
+        <a href="#collection">Collection</a>
+        <a href="#process">Process</a>
+        <a href="#contact">Contact</a>
+      </nav>
+      <button class="btn btn--leaf" type="button" data-open="auth">Sign In</button>
+    </div>
+
+    <!-- ============================================================ -->
+    <!--  Side dot navigation                                           -->
+    <!-- ============================================================ -->
+    <nav class="dots" id="dots" aria-label="Section navigation"></nav>
+
+    <!-- ============================================================ -->
+    <!--  Main                                                         -->
+    <!-- ============================================================ -->
+    <main id="main">
+      <!-- ---------------------------------------------------------- -->
+      <!--  HERO                                                       -->
+      <!-- ---------------------------------------------------------- -->
+      <section class="hero section" id="hero" data-section="hero">
+        <div class="hero__title">
+          <p class="eyebrow reveal" data-reveal>
+            <span>Est. Kollarmalil Spices</span><i></i><span>Since the 1980s</span>
+          </p>
+          <h1 class="hero__wordmark reveal" data-reveal>VAVA SPICES</h1>
+          <p class="hero__tagline reveal" data-reveal>The Essence of Purity</p>
+        </div>
+
+        <div class="hero__bottom">
+          <p class="hero__lede reveal" data-reveal>
+            Four decades rooted in Kerala's spice hills — now graded, packed and
+            quality-checked the way a modern kitchen deserves.
+          </p>
+          <div class="hero__cta reveal" data-reveal>
+            <a class="btn btn--leaf" href="#collection">Explore the collection</a>
+            <a class="btn btn--outline" href="#story">Our story</a>
+          </div>
+        </div>
+
+        <div class="scrollcue" aria-hidden="true">
+          <span>Scroll</span>
+          <i></i>
+        </div>
+      </section>
+
+      <!-- ---------------------------------------------------------- -->
+      <!--  OUR STORY                                                  -->
+      <!-- ---------------------------------------------------------- -->
+      <section class="story section section--panel" id="story" data-section="story">
+        <div class="wrap story__grid">
+          <div class="story__aside">
+            <img
+              class="story__crest"
+              src="assets/logo-mark.png"
+              alt="Vava Spices"
+              width="132"
+              height="126"
+              loading="lazy"
+            />
+            <p class="eyebrow eyebrow--left">Our Story</p>
+            <h2 class="h2">Four decades rooted in Kerala's spice hills</h2>
+          </div>
+
+          <div class="story__body">
+            <p class="lede reveal" data-reveal>
+              Founded in the early 1980s by K.P. Mathai &amp; Sons under the name
+              <em>Kollarmalil Spices</em>, our family has spent generations trading the
+              finest produce of the Western Ghats.
+            </p>
+            <p class="reveal" data-reveal>
+              In 2015 the legacy was reborn as <strong>Vava Spices (P) Ltd</strong> —
+              combining old-world sourcing relationships with modern grading, packaging
+              and quality control.
+            </p>
+            <p class="reveal" data-reveal>
+              From the cardamom estates of Idukki to the tea gardens of the high ranges,
+              we bring authentic, aromatic spices to kitchens and businesses across the
+              country.
+            </p>
+
+            <ol class="timeline" id="timeline">
+              <li class="timeline__item reveal" data-reveal>
+                <span class="timeline__year">1980s</span>
+                <div class="timeline__body">
+                  <h3>Kollarmalil Spices</h3>
+                  <p>
+                    K.P. Mathai &amp; Sons trade out of the Kerala hills, building
+                    relationships with estate families that still supply us today.
+                  </p>
+                </div>
+              </li>
+              <li class="timeline__item reveal" data-reveal>
+                <span class="timeline__year">2015</span>
+                <div class="timeline__body">
+                  <h3>Vava Spices (P) Ltd</h3>
+                  <p>
+                    The legacy is rebuilt as a private limited company — same
+                    sourcing, new grading hall, lab checks and export-grade packing.
+                  </p>
+                </div>
+              </li>
+              <li class="timeline__item reveal" data-reveal>
+                <span class="timeline__year">Today</span>
+                <div class="timeline__body">
+                  <h3>Hills to kitchens</h3>
+                  <p>
+                    Household packs and bulk contracts across India, every lot traceable
+                    back to the estate it came from.
+                  </p>
+                </div>
+              </li>
+            </ol>
+          </div>
+        </div>
+      </section>
+
+      <!-- ---------------------------------------------------------- -->
+      <!--  ORIGINS                                                    -->
+      <!-- ---------------------------------------------------------- -->
+      <section class="origins section section--panel" id="origins" data-section="origins">
+        <div class="wrap">
+          <header class="section-head reveal" data-reveal>
+            <p class="eyebrow eyebrow--left">Sourcing</p>
+            <h2 class="h2">Three landscapes, one shelf</h2>
+            <p class="section-head__lede">
+              We buy at origin, in the season, from people we have known for decades —
+              not from brokers who bought from brokers.
+            </p>
+          </header>
+
+          <div class="origins__grid" id="originsGrid">
+            <article class="origin reveal" data-reveal>
+              <span class="origin__alt">1,200–1,800 m</span>
+              <h3>Cardamom estates</h3>
+              <p>
+                The cardamom hills of Idukki. Pods are cut green, cured in the sun and
+                sold to us within weeks of the harvest — which is exactly when they are
+                at their most fragrant.
+              </p>
+              <ul class="origin__tags">
+                <li>Idukki</li><li>8 mm bold</li><li>Green, hand-cut</li>
+              </ul>
+            </article>
+            <article class="origin reveal" data-reveal>
+              <span class="origin__alt">Coast line</span>
+              <h3>Malabar pepper</h3>
+              <p>
+                Vine-grown along the Malabar coast, sun-dried on mats and turned by
+                hand. We garble on site so only the heaviest, most uniform berries
+                reach a customer.
+              </p>
+              <ul class="origin__tags">
+                <li>Tellicherry</li><li>TGSEB</li><li>Wreath dried</li>
+              </ul>
+            </article>
+            <article class="origin reveal" data-reveal>
+              <span class="origin__alt">High ranges</span>
+              <h3>Tea country botanicals</h3>
+              <p>
+                Above the tea gardens the air stays cool and dry — ideal for curing
+                clove and bark. Traders along the Kochi–Munnar route have supplied us
+                since the first decade.
+              </p>
+              <ul class="origin__tags">
+                <li>Munnar route</li><li>Slow cured</li><li>Whole form</li>
+              </ul>
+            </article>
+          </div>
+
+          <div class="figures reveal" data-reveal>
+            <div class="figure"><b data-count="40" data-suffix="+">0</b><span>Years trading</span></div>
+            <div class="figure"><b data-count="2015" data-plain="1">0</b><span>Reborn as Vava Spices (P) Ltd</span></div>
+            <div class="figure"><b data-count="100" data-suffix="%">0</b><span>Lots traceable to source</span></div>
+            <div class="figure"><b data-count="6" data-suffix="">0</b><span>Whole spices, unground</span></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ---------------------------------------------------------- -->
+      <!--  COLLECTION (the 3D showcase)                               -->
+      <!-- ---------------------------------------------------------- -->
+      <section class="collection section" id="collection" data-section="collection">
+        <div class="collection__inner">
+          <!-- Product detail panel -->
+          <aside class="pinfo" id="pinfo">
+            <p class="eyebrow eyebrow--left" id="pLatin"></p>
+            <h2 class="pinfo__title" id="pName">Green Cardamom</h2>
+
+            <div class="pinfo__rating">
+              <div class="stars" id="pStars" aria-hidden="true"></div>
+              <span id="pReviews">Reviews</span>
+            </div>
+
+            <dl class="pinfo__specs" id="pSpecs"></dl>
+
+            <div class="pinfo__meters" id="pMeters"></div>
+
+            <p class="pinfo__blurb" id="pBlurb"></p>
+
+            <ul class="notes" id="pNotes"></ul>
+
+            <div class="pinfo__foot">
+              <div class="price">
+                <b id="pPrice">₹1,850</b><span id="pUnit">per kg</span>
+              </div>
+              <div class="pinfo__actions">
+                <button class="btn btn--leaf" type="button" id="pAdd">Add to enquiry</button>
+                <button
+                  class="btn btn--circle"
+                  type="button"
+                  id="pNext"
+                  aria-label="Next product"
+                >
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true">
+                    <path d="m9 5 7 7-7 7" stroke-linecap="round" stroke-linejoin="round" />
+                  </svg>
+                </button>
+              </div>
+            </div>
+          </aside>
+
+          <!-- Product carousel dots, sitting above the cluster -->
+          <div class="carousel-dots" id="carouselDots" aria-hidden="true"></div>
+        </div>
+
+        <!-- Bottom switcher -->
+        <div class="switcher">
+          <div class="switcher__rule" aria-hidden="true"><i></i><b></b><i></i></div>
+          <div class="switcher__track" id="switcher" role="tablist" aria-label="Choose a spice"></div>
+        </div>
+
+        <!-- Left / right arrows (desktop) -->
+        <button class="navarrow navarrow--prev" type="button" id="prevBtn" aria-label="Previous product">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
+            <path d="m15 5-7 7 7 7" stroke-linecap="round" stroke-linejoin="round" />
+          </svg>
+        </button>
+        <button class="navarrow navarrow--next" type="button" id="nextBtn" aria-label="Next product">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
+            <path d="m9 5 7 7-7 7" stroke-linecap="round" stroke-linejoin="round" />
+          </svg>
+        </button>
+      </section>
+
+      <!-- ---------------------------------------------------------- -->
+      <!--  PROCESS                                                    -->
+      <!-- ---------------------------------------------------------- -->
+      <section class="process section section--panel" id="process" data-section="process">
+        <div class="wrap">
+          <header class="section-head reveal" data-reveal>
+            <p class="eyebrow eyebrow--left">How we work</p>
+            <h2 class="h2">From the estate gate to your order</h2>
+            <p class="section-head__lede">
+              Four stages, every lot, no exceptions. This is the part the video never
+              shows you.
+            </p>
+          </header>
+
+          <ol class="steps">
+            <li class="step reveal" data-reveal>
+              <span class="step__num">01</span>
+              <h3>Source</h3>
+              <p>
+                Bought direct from estate families at the gate price during the season.
+                We pay above the local rate and we pay on time.
+              </p>
+            </li>
+            <li class="step reveal" data-reveal>
+              <span class="step__num">02</span>
+              <h3>Grade</h3>
+              <p>
+                Screen size, colour, moisture and defect rate checked on a sample from
+                every batch. What falls out of grade goes to the cheaper tier, never
+                into your pack.
+              </p>
+            </li>
+            <li class="step reveal" data-reveal>
+              <span class="step__num">03</span>
+              <h3>Pack</h3>
+              <p>
+                Whole spice, packed whole, in food-grade liners with the lot code and
+                packing date printed on every unit.
+              </p>
+            </li>
+            <li class="step reveal" data-reveal>
+              <span class="step__num">04</span>
+              <h3>Dispatch</h3>
+              <p>
+                Lot numbers travel with the shipment, so a complaint can be traced to a
+                bag and answered with a fact rather than an apology.
+              </p>
+            </li>
+          </ol>
+        </div>
+      </section>
+
+      <!-- ---------------------------------------------------------- -->
+      <!--  STANDARDS                                                  -->
+      <!-- ---------------------------------------------------------- -->
+      <section class="standards section section--panel" id="standards" data-section="standards">
+        <div class="wrap">
+          <div class="standards__grid">
+            <div class="standards__intro reveal" data-reveal>
+              <p class="eyebrow eyebrow--left">Standards</p>
+              <h2 class="h2">What we will put in writing</h2>
+              <p>
+                Documentation is available on request with your first order — batch
+                sheets, moisture readings, test reports and the lot trail back to the
+                estate.
+              </p>
+            </div>
+            <ul class="standards__list">
+              <li class="reveal" data-reveal>
+                <h3>Food-grade packaging</h3>
+                <p>Barrier liners that let whole spice breathe without letting moisture in.</p>
+              </li>
+              <li class="reveal" data-reveal>
+                <h3>Lot traceability</h3>
+                <p>Every pack stamped with a lot code tied to its grading record.</p>
+              </li>
+              <li class="reveal" data-reveal>
+                <h3>Nothing ground</h3>
+                <p>We ship whole pods, berries, buds and bark. Grinding is your choice, not ours.</p>
+              </li>
+              <li class="reveal" data-reveal>
+                <h3>Moisture &amp; cleanliness checks</h3>
+                <p>Sampled and recorded before a batch is released for despatch.</p>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </section>
+
+      <!-- ---------------------------------------------------------- -->
+      <!--  CONTACT                                                    -->
+      <!-- ---------------------------------------------------------- -->
+      <section class="contact section section--panel" id="contact" data-section="contact">
+        <div class="wrap contact__grid">
+          <div class="contact__intro reveal" data-reveal>
+            <p class="eyebrow eyebrow--left">Contact</p>
+            <h2 class="h2">Tell us what your kitchen needs</h2>
+            <p>
+              Retail packs, hotel supply, repacking or export — send us the volumes and
+              the grades you move, and we will send a quote with current lot prices.
+            </p>
+
+            <!-- EDIT: replace these placeholder details with your real ones. -->
+            <ul class="contact__details">
+              <li><span>Company</span><b>Vava Spices (P) Ltd</b></li>
+              <li><span>Trading as</span><b>Kollarmalil Spices since the 1980s</b></li>
+              <li><span>Based in</span><b>Kerala, India</b></li>
+              <li><span>Email</span><b>sales@vavaspices.example</b></li>
+              <li><span>Phone</span><b>+91 00000 00000</b></li>
+            </ul>
+          </div>
+
+          <form class="contact__form reveal" data-reveal id="enquiryForm" novalidate>
+            <div class="field">
+              <label for="fName">Name</label>
+              <input id="fName" name="name" type="text" autocomplete="name" required placeholder="Your name" />
+              <p class="field__error" data-error-for="fName"></p>
+            </div>
+            <div class="field">
+              <label for="fEmail">Email</label>
+              <input id="fEmail" name="email" type="email" autocomplete="email" required placeholder="you@company.com" />
+              <p class="field__error" data-error-for="fEmail"></p>
+            </div>
+            <div class="field">
+              <label for="fCompany">Business</label>
+              <input id="fCompany" name="company" type="text" autocomplete="organization" placeholder="Restaurant, retailer…" />
+              <p class="field__error" data-error-for="fCompany"></p>
+            </div>
+            <div class="field field--full">
+              <label for="fSpice">Spices of interest</label>
+              <div class="chips" id="fSpice"></div>
+            </div>
+            <div class="field field--full">
+              <label for="fMessage">Message</label>
+              <textarea id="fMessage" name="message" rows="4" placeholder="Volumes, grades, delivery city…"></textarea>
+              <p class="field__error" data-error-for="fMessage"></p>
+            </div>
+            <button class="btn btn--leaf btn--wide" type="submit">Request a quote</button>
+            <p class="form__status" id="formStatus" role="status" aria-live="polite"></p>
+          </form>
+        </div>
+      </section>
+    </main>
+
+    <!-- ============================================================ -->
+    <!--  Footer                                                      -->
+    <!-- ============================================================ -->
+    <footer class="footer">
+      <div class="wrap footer__inner">
+        <div class="footer__brand">
+          <img src="assets/logo-mark.png" alt="Vava Spices" width="72" height="69" loading="lazy" />
+          <p>
+            <strong>Vava Spices (P) Ltd</strong><br />
+            Four decades rooted in Kerala's spice hills.
+          </p>
+        </div>
+        <nav class="footer__nav" aria-label="Footer">
+          <a href="#story">Our Story</a>
+          <a href="#origins">Origins</a>
+          <a href="#collection">Collection</a>
+          <a href="#process">Process</a>
+          <a href="#contact">Contact</a>
+        </nav>
+        <p class="footer__legal">
+          © <span id="year">2025</span> Vava Spices (P) Ltd. All rights reserved.
+        </p>
+      </div>
+    </footer>
+
+    <!-- ============================================================ -->
+    <!--  Floating chat                                               -->
+    <!-- ============================================================ -->
+    <button class="chat-fab" type="button" id="chatFab" aria-label="Chat with the sourcing desk">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
+        <path d="M21 12a8 8 0 0 1-8 8H7l-4 3v-5.5A8 8 0 1 1 21 12Z" stroke-linejoin="round" />
+      </svg>
+    </button>
+
+    <div class="chat" id="chat" hidden>
+      <div class="chat__head">
+        <img src="assets/logo-mark.png" alt="" width="34" height="33" />
+        <div>
+          <b>Sourcing desk</b>
+          <span>Vava Spices (P) Ltd</span>
+        </div>
+        <button type="button" id="chatClose" aria-label="Close chat">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true">
+            <path d="m6 6 12 12M18 6 6 18" stroke-linecap="round" />
+          </svg>
+        </button>
+      </div>
+      <div class="chat__log" id="chatLog" role="log" aria-live="polite"></div>
+      <div class="chat__quick" id="chatQuick"></div>
+    </div>
+
+    <!-- ============================================================ -->
+    <!--  Drawers                                                     -->
+    <!-- ============================================================ -->
+    <div class="scrim" id="scrim" hidden></div>
+
+    <aside class="drawer" id="cartDrawer" hidden aria-label="Enquiry basket">
+      <header class="drawer__head">
+        <h2>Your enquiry</h2>
+        <button type="button" data-close aria-label="Close basket">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true">
+            <path d="m6 6 12 12M18 6 6 18" stroke-linecap="round" />
+          </svg>
+        </button>
+      </header>
+      <div class="drawer__body" id="cartItems"></div>
+      <footer class="drawer__foot">
+        <div class="drawer__total"><span>Indicative total</span><b id="cartTotal">₹0</b></div>
+        <p class="drawer__note">
+          Prices are per kilogram and indicative. We confirm current lot prices,
+          packing and freight when we receive your enquiry.
+        </p>
+        <button class="btn btn--leaf btn--wide" type="button" id="cartSend">Send enquiry</button>
+        <button class="btn btn--outline btn--wide" type="button" data-close>Continue browsing</button>
+      </footer>
+    </aside>
+
+    <aside class="drawer" id="authDrawer" hidden aria-label="Sign in">
+      <header class="drawer__head">
+        <h2>Trade account</h2>
+        <button type="button" data-close aria-label="Close">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true">
+            <path d="m6 6 12 12M18 6 6 18" stroke-linecap="round" />
+          </svg>
+        </button>
+      </header>
+      <div class="drawer__body">
+        <form id="authForm" novalidate>
+          <div class="field">
+            <label for="aEmail">Email</label>
+            <input id="aEmail" type="email" autocomplete="email" placeholder="you@company.com" required />
+            <p class="field__error" data-error-for="aEmail"></p>
+          </div>
+          <div class="field">
+            <label for="aPass">Password</label>
+            <input id="aPass" type="password" autocomplete="current-password" placeholder="••••••••" required />
+            <p class="field__error" data-error-for="aPass"></p>
+          </div>
+          <button class="btn btn--leaf btn--wide" type="submit">Sign in</button>
+          <p class="form__status" id="authStatus" role="status" aria-live="polite"></p>
+          <p class="drawer__note">
+            Trade accounts are opened by our sourcing desk. This sample form is a
+            front-end demonstration and does not send anything anywhere.
+          </p>
+        </form>
+      </div>
+    </aside>
+
+    <!-- Toast -->
+    <div class="toast" id="toast" role="status" aria-live="polite" hidden></div>
+
+    <script type="module" src="js/main.js"></script>
+    <noscript>
+      <div class="noscript">
+        Vava Spices (P) Ltd — Kerala, India. This showcase needs JavaScript for the
+        3D experience. Please call or email us for current lot prices.
+      </div>
+    </noscript>
+  </body>
+</html>

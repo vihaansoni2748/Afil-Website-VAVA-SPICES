@@ -1,0 +1,606 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>VAVA SPICES | The Essence of Purity</title>
+  
+  <!-- Fonts: Cinzel for Luxury Serif, Montserrat for clean Sans-serif UI -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Montserrat:wght@300;400;500;600&display=swap" rel="stylesheet">
+  
+  <!-- Tailwind CSS for rapid exact layout -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            brand: {
+              bg: '#0a0807',
+              gold: '#d4af37',
+              goldDim: '#8c7326',
+              panel: 'rgba(10, 8, 7, 0.4)'
+            }
+          },
+          fontFamily: {
+            serif: ['"Cinzel"', 'serif'],
+            sans: ['"Montserrat"', 'sans-serif'],
+          }
+        }
+      }
+    }
+  </script>
+
+  <!-- Three.js for 3D Rendering -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+
+  <style>
+    body {
+      margin: 0;
+      overflow: hidden;
+      background-color: #0a0807;
+      color: #ffffff;
+      user-select: none;
+    }
+    
+    #canvas-container {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      z-index: 1;
+    }
+
+    /* CSS Background Glows (Matching the video's golden arcs) */
+    .bg-glow-arcs {
+      position: absolute;
+      inset: 0;
+      z-index: 0;
+      pointer-events: none;
+      background: 
+        radial-gradient(circle at 15% 50%, rgba(212, 175, 55, 0.03) 0%, transparent 40%),
+        radial-gradient(circle at 85% 80%, rgba(212, 175, 55, 0.05) 0%, transparent 50%);
+    }
+    
+    .arc {
+      position: absolute;
+      border-radius: 50%;
+      border: 1px solid rgba(212, 175, 55, 0.1);
+      box-shadow: 0 0 20px rgba(212, 175, 55, 0.05);
+    }
+    
+    .arc-1 { width: 800px; height: 800px; left: -200px; bottom: -300px; }
+    .arc-2 { width: 1200px; height: 1200px; right: -400px; top: -200px; border-width: 2px; border-color: rgba(212,175,55,0.05); }
+
+    .ui-layer {
+      position: absolute;
+      inset: 0;
+      z-index: 10;
+      pointer-events: none;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* Make buttons and interactive elements clickable through the absolute overlay */
+    .pointer-events-auto { pointer-events: auto; }
+
+    /* Custom Toggle Slider Style */
+    .toggle-bar {
+      background: rgba(20, 15, 10, 0.6);
+      border: 1px solid rgba(212, 175, 55, 0.3);
+      backdrop-filter: blur(10px);
+    }
+    .toggle-btn {
+      transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    .toggle-btn.active {
+      background: rgba(212, 175, 55, 0.15);
+      border: 1px solid #d4af37;
+      box-shadow: 0 0 15px rgba(212, 175, 55, 0.2);
+    }
+    .indicator-circle {
+      transition: background-color 0.4s;
+    }
+    .toggle-btn.active .indicator-circle {
+      background-color: #d4af37;
+      box-shadow: 0 0 8px #d4af37;
+    }
+
+    /* Left Info Panel Transition */
+    #info-panel {
+      transition: opacity 0.5s ease, transform 0.5s ease;
+    }
+    .fade-out {
+      opacity: 0;
+      transform: translateX(-20px);
+    }
+    
+    /* Scroll Indicator dots */
+    .scroll-dots span {
+      transition: all 0.3s;
+    }
+  </style>
+</head>
+<body class="font-sans antialiased">
+
+  <!-- Background Ambience -->
+  <div class="bg-glow-arcs">
+    <div class="arc arc-1"></div>
+    <div class="arc arc-2"></div>
+  </div>
+
+  <!-- WebGL 3D Canvas -->
+  <div id="canvas-container"></div>
+
+  <!-- UI Overlay -->
+  <div class="ui-layer">
+    
+    <!-- HEADER -->
+    <header class="w-full flex justify-between items-center px-10 py-6 pointer-events-auto">
+      <div class="flex items-center gap-12">
+        <!-- Logo -->
+        <div class="font-serif text-2xl font-bold tracking-widest text-brand-gold">
+          VAVA<br><span class="text-[0.6rem] tracking-[0.3em] font-sans text-gray-400 uppercase relative -top-2">Spices</span>
+        </div>
+        <!-- Nav -->
+        <nav class="hidden md:flex gap-6 text-[0.65rem] tracking-[0.2em] uppercase font-medium text-gray-400">
+          <a href="#" class="text-white hover:text-brand-gold transition-colors">Home</a>
+          <a href="#" class="hover:text-brand-gold transition-colors">Contact Neres</a>
+        </nav>
+      </div>
+
+      <!-- Auth & Cart -->
+      <div class="flex items-center gap-6 text-[0.65rem] tracking-[0.15em] uppercase font-semibold">
+        <a href="#" class="text-gray-300 hover:text-white transition-colors">Log In</a>
+        <a href="#" class="bg-[#e8cd87] text-black px-6 py-2.5 rounded-full hover:bg-white transition-colors shadow-[0_0_15px_rgba(232,205,135,0.3)]">Sign In</a>
+        <div class="relative ml-2 cursor-pointer">
+          <svg class="w-5 h-5 text-brand-gold" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"></path></svg>
+          <span class="absolute -top-2 -right-2 bg-brand-gold text-black text-[0.5rem] w-4 h-4 rounded-full flex items-center justify-center font-bold">0</span>
+        </div>
+      </div>
+    </header>
+
+    <!-- CENTER TITLE (Always visible at top center as in video) -->
+    <div class="absolute top-10 left-1/2 -translate-x-1/2 text-center pointer-events-none">
+      <h1 class="font-serif text-4xl md:text-5xl lg:text-6xl text-brand-gold drop-shadow-[0_0_15px_rgba(212,175,55,0.3)]">VAVA SPICES</h1>
+      <p class="font-sans text-[0.6rem] md:text-xs tracking-[0.4em] text-gray-300 mt-2 uppercase">The Essence of Purity</p>
+    </div>
+
+    <!-- MAIN CONTENT AREA (Left Panel) -->
+    <div class="flex-1 flex items-center px-16 relative">
+      
+      <!-- Dynamic Info Panel -->
+      <div id="info-panel" class="w-[380px] pointer-events-auto">
+        <h2 id="product-title" class="font-serif text-5xl mb-3 text-white drop-shadow-lg">Cardamom</h2>
+        
+        <!-- Stars -->
+        <div class="flex items-center gap-2 mb-6">
+          <div class="flex text-brand-gold text-xs">
+            ★★★★★
+          </div>
+          <span class="text-[0.65rem] text-gray-400 tracking-wider uppercase">Reviews</span>
+        </div>
+
+        <!-- Specs -->
+        <div class="space-y-1 mb-6 text-[0.7rem] font-medium tracking-wide">
+          <div class="flex"><span class="text-brand-gold w-24">Origin:</span> <span id="product-spec1" class="text-gray-300">Kerala, India</span></div>
+          <div class="flex"><span class="text-brand-gold w-24">Grade:</span> <span id="product-spec2" class="text-gray-300">8mm+ Extra Bold</span></div>
+        </div>
+
+        <!-- Description -->
+        <p id="product-desc" class="text-xs text-gray-400 leading-relaxed tracking-wide mb-8">
+          Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula eget dolor. Aenean massa. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus.
+        </p>
+
+        <!-- CTA -->
+        <button class="bg-transparent border border-brand-gold text-brand-gold hover:bg-brand-gold hover:text-black transition-all px-8 py-3 rounded-full text-[0.7rem] uppercase tracking-[0.2em] font-semibold">
+          Shop Now
+        </button>
+      </div>
+
+    </div>
+
+    <!-- BOTTOM CONTROLS -->
+    <div class="w-full pb-10 flex flex-col items-center pointer-events-auto relative z-20">
+      
+      <!-- Scroll Dots (Just visual like the video) -->
+      <div class="flex gap-2 mb-8 scroll-dots pointer-events-none">
+        <span class="w-1.5 h-1.5 rounded-full bg-brand-gold shadow-[0_0_8px_#d4af37]"></span>
+        <span class="w-1.5 h-1.5 rounded-full bg-gray-600"></span>
+        <span class="w-1.5 h-1.5 rounded-full bg-gray-600"></span>
+        <span class="w-1.5 h-1.5 rounded-full bg-gray-600"></span>
+      </div>
+
+      <!-- Toggle Pill -->
+      <div class="toggle-bar rounded-full p-1.5 flex items-center gap-1 w-full max-w-md mx-auto">
+        
+        <button id="btn-cardamom" class="toggle-btn active flex-1 flex items-center justify-center gap-3 py-2.5 rounded-full border border-transparent">
+          <div class="indicator-circle w-3 h-3 rounded-full bg-[#d4af37] border border-gray-400/30"></div>
+          <span class="text-[0.75rem] font-medium tracking-widest uppercase text-gray-200">Green Cardamom</span>
+        </button>
+
+        <button id="btn-pepper" class="toggle-btn flex-1 flex items-center justify-center gap-3 py-2.5 rounded-full border border-transparent">
+          <div class="indicator-circle w-3 h-3 rounded-full bg-gray-600 border border-gray-400/30"></div>
+          <span class="text-[0.75rem] font-medium tracking-widest uppercase text-gray-200">Black Pepper</span>
+        </button>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- Three.js Implementation -->
+  <script>
+    // --------------------------------------------------------
+    // 1. DATA & UI STATE MANAGEMENT
+    // --------------------------------------------------------
+    const productData = {
+      cardamom: {
+        title: "Cardamom",
+        spec1: "Kerala, India",
+        spec2: "8mm+ Extra Bold",
+        desc: "Renowned as the Queen of Spices. These premium hand-picked pods offer a highly aromatic, complex flavor profile featuring sweet eucalyptus, invigorating mint, and elevated floral zest. Perfect for gourmet culinary and baking applications."
+      },
+      pepper: {
+        title: "Black Pepper",
+        spec1: "Malabar Coast",
+        spec2: "Tellicherry TGSEB",
+        desc: "Sun-ripened on the vine until deep dark maturity. Features a robust, woody bite backed by complex citrus aromas and intense piperine heat. Carefully garbled to ensure only the boldest, most uniform berries make the cut."
+      }
+    };
+
+    let currentMode = 'cardamom';
+
+    // UI Elements
+    const btnCardamom = document.getElementById('btn-cardamom');
+    const btnPepper = document.getElementById('btn-pepper');
+    const infoPanel = document.getElementById('info-panel');
+    const pTitle = document.getElementById('product-title');
+    const pSpec1 = document.getElementById('product-spec1');
+    const pSpec2 = document.getElementById('product-spec2');
+    const pDesc = document.getElementById('product-desc');
+
+    function updateUI(mode) {
+      if(currentMode === mode) return;
+      currentMode = mode;
+
+      // Toggle Buttons
+      if(mode === 'cardamom') {
+        btnCardamom.classList.add('active');
+        btnPepper.classList.remove('active');
+      } else {
+        btnPepper.classList.add('active');
+        btnCardamom.classList.remove('active');
+      }
+
+      // Animate Info Panel Text
+      infoPanel.classList.add('fade-out');
+      
+      setTimeout(() => {
+        pTitle.innerText = productData[mode].title;
+        pSpec1.innerText = productData[mode].spec1;
+        pSpec2.innerText = productData[mode].spec2;
+        pDesc.innerText = productData[mode].desc;
+        
+        infoPanel.classList.remove('fade-out');
+      }, 500);
+
+      // Trigger 3D Transition
+      transition3D(mode);
+    }
+
+    btnCardamom.addEventListener('click', () => updateUI('cardamom'));
+    btnPepper.addEventListener('click', () => updateUI('pepper'));
+
+
+    // --------------------------------------------------------
+    // 2. THREE.JS SCENE SETUP
+    // --------------------------------------------------------
+    const container = document.getElementById('canvas-container');
+    const scene = new THREE.Scene();
+    scene.fog = new THREE.FogExp2(0x0a0807, 0.04); // Dark brown/black fog
+
+    const camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 100);
+    camera.position.set(0, 0, 16);
+
+    const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+    renderer.setSize(window.innerWidth, window.innerHeight);
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+    // High contrast cinematic tone mapping
+    renderer.toneMapping = THREE.ACESFilmicToneMapping;
+    renderer.toneMappingExposure = 1.3;
+    container.appendChild(renderer.domElement);
+
+    // ================= LIGHTING =================
+    const ambientLight = new THREE.AmbientLight(0xffffff, 0.4);
+    scene.add(ambientLight);
+
+    // Main warm key light
+    const keyLight = new THREE.DirectionalLight(0xfff0d4, 1.5);
+    keyLight.position.set(5, 5, 8);
+    scene.add(keyLight);
+
+    // Golden rim light from behind/below
+    const rimLight = new THREE.SpotLight(0xd4af37, 4, 30, Math.PI/3, 0.8, 1);
+    rimLight.position.set(0, -6, -4);
+    rimLight.lookAt(0,0,0);
+    scene.add(rimLight);
+    
+    // Subtle left fill light
+    const fillLight = new THREE.DirectionalLight(0x8a99a8, 0.5);
+    fillLight.position.set(-8, 2, 2);
+    scene.add(fillLight);
+
+
+    // ================= PROCEDURAL TEXTURES =================
+    // Cardamom Texture
+    function getCardamomTex() {
+      const cvs = document.createElement('canvas');
+      cvs.width = cvs.height = 512;
+      const ctx = cvs.getContext('2d');
+      ctx.fillStyle = '#6e8c45'; // base green
+      ctx.fillRect(0,0,512,512);
+      
+      // Draw ribs
+      for(let i=0; i<30; i++) {
+        ctx.strokeStyle = i%2===0 ? '#546b33' : '#85a358';
+        ctx.lineWidth = 4 + Math.random()*2;
+        ctx.beginPath();
+        const x = (i/30)*512;
+        ctx.moveTo(x, 0);
+        ctx.bezierCurveTo(x+15, 256, x-15, 256, x, 512);
+        ctx.stroke();
+      }
+      return new THREE.CanvasTexture(cvs);
+    }
+
+    // Pepper Texture
+    function getPepperTex() {
+      const cvs = document.createElement('canvas');
+      cvs.width = cvs.height = 512;
+      const ctx = cvs.getContext('2d');
+      ctx.fillStyle = '#171412'; // very dark brown/black
+      ctx.fillRect(0,0,512,512);
+      
+      for(let i=0; i<8000; i++) {
+        const v = Math.floor(10 + Math.random()*30);
+        ctx.fillStyle = `rgb(${v}, ${v}, ${v})`;
+        ctx.fillRect(Math.random()*512, Math.random()*512, 2, 2);
+      }
+      
+      for(let i=0; i<400; i++) {
+        ctx.strokeStyle = 'rgba(5,5,5,0.8)';
+        ctx.lineWidth = 2;
+        ctx.beginPath();
+        ctx.arc(Math.random()*512, Math.random()*512, 4 + Math.random()*8, 0, Math.PI*2);
+        ctx.stroke();
+      }
+      return new THREE.CanvasTexture(cvs);
+    }
+
+    const cTex = getCardamomTex();
+    const pTex = getPepperTex();
+
+    const cardamomMat = new THREE.MeshStandardMaterial({
+      map: cTex, bumpMap: cTex, bumpScale: 0.05, roughness: 0.6, metalness: 0.1
+    });
+
+    const pepperMat = new THREE.MeshStandardMaterial({
+      map: pTex, bumpMap: pTex, bumpScale: 0.15, roughness: 0.8, metalness: 0.2
+    });
+
+    // ================= SPICE GROUPS =================
+    const cardamomGroup = new THREE.Group();
+    const pepperGroup = new THREE.Group();
+    scene.add(cardamomGroup);
+    scene.add(pepperGroup);
+    
+    // Arrays to hold mesh data for animation
+    const cardamoms = [];
+    const peppers = [];
+
+    // Helper to generate Cardamom geometry
+    function createCardamomMesh() {
+      const geom = new THREE.SphereGeometry(1, 32, 32);
+      geom.scale(0.5, 1.3, 0.5);
+      const pos = geom.attributes.position;
+      for (let i = 0; i < pos.count; i++) {
+        const y = pos.getY(i);
+        const factor = 1.0 - Math.pow(Math.abs(y) / 1.3, 2.2) * 0.4;
+        pos.setX(i, pos.getX(i) * factor);
+        pos.setZ(i, pos.getZ(i) * factor);
+      }
+      geom.computeVertexNormals();
+      return new THREE.Mesh(geom, cardamomMat);
+    }
+
+    // Helper to generate Peppercorn geometry
+    function createPepperMesh() {
+      const geom = new THREE.DodecahedronGeometry(0.8, 4);
+      const pos = geom.attributes.position;
+      for (let i = 0; i < pos.count; i++) {
+        const jitter = 1 + (Math.random() - 0.5) * 0.15;
+        pos.setX(i, pos.getX(i) * jitter);
+        pos.setY(i, pos.getY(i) * jitter);
+        pos.setZ(i, pos.getZ(i) * jitter);
+      }
+      geom.computeVertexNormals();
+      return new THREE.Mesh(geom, pepperMat);
+    }
+
+    // Populate Groups (Like in the video, a scattered cluster)
+    // Shift slightly to the right to balance the left UI panel
+    const centerX = 2; 
+
+    // 1. Create Cardamoms
+    for(let i=0; i<12; i++) {
+      const mesh = createCardamomMesh();
+      // Random positions inside a volume
+      const x = centerX + (Math.random() - 0.5) * 12;
+      const y = (Math.random() - 0.5) * 8;
+      const z = (Math.random() - 0.5) * 8;
+      
+      mesh.position.set(x, y, z);
+      mesh.rotation.set(Math.random()*Math.PI, Math.random()*Math.PI, Math.random()*Math.PI);
+      
+      // Scale based on z depth for faux depth of field
+      const s = 1 + (z * 0.1);
+      mesh.scale.set(s, s, s);
+      
+      cardamomGroup.add(mesh);
+      
+      cardamoms.push({
+        mesh, 
+        baseY: y,
+        rxSpeed: (Math.random()-0.5)*0.01,
+        rySpeed: (Math.random()-0.5)*0.01,
+        floatSpeed: 0.5 + Math.random(),
+        floatAmp: 0.2 + Math.random()*0.3
+      });
+    }
+
+    // 2. Create Peppercorns
+    for(let i=0; i<18; i++) {
+      const mesh = createPepperMesh();
+      const x = centerX + (Math.random() - 0.5) * 12;
+      const y = (Math.random() - 0.5) * 8;
+      const z = (Math.random() - 0.5) * 8;
+      
+      mesh.position.set(x, y, z);
+      mesh.rotation.set(Math.random()*Math.PI, Math.random()*Math.PI, Math.random()*Math.PI);
+      
+      const s = 1 + (z * 0.1);
+      mesh.scale.set(s, s, s);
+      
+      pepperGroup.add(mesh);
+      
+      peppers.push({
+        mesh, 
+        baseY: y,
+        rxSpeed: (Math.random()-0.5)*0.015,
+        rySpeed: (Math.random()-0.5)*0.015,
+        floatSpeed: 0.8 + Math.random(),
+        floatAmp: 0.15 + Math.random()*0.2
+      });
+    }
+
+    // Initial State
+    pepperGroup.visible = false;
+    pepperGroup.scale.set(0.01, 0.01, 0.01);
+
+    // ================= GOLDEN PARTICLES (Dust) =================
+    const particlesGeom = new THREE.BufferGeometry();
+    const particleCount = 400;
+    const posArray = new Float32Array(particleCount * 3);
+    
+    for(let i=0; i<particleCount*3; i++) {
+      posArray[i] = (Math.random() - 0.5) * 30; // Spread wide
+    }
+    particlesGeom.setAttribute('position', new THREE.BufferAttribute(posArray, 3));
+    
+    // Custom glowing particle material
+    const particleMat = new THREE.PointsMaterial({
+      size: 0.08,
+      color: 0xd4af37,
+      transparent: true,
+      opacity: 0.6,
+      blending: THREE.AdditiveBlending
+    });
+    
+    const particleMesh = new THREE.Points(particlesGeom, particleMat);
+    scene.add(particleMesh);
+
+
+    // ================= TRANSITION LOGIC =================
+    let targetCardamomScale = 1;
+    let targetPepperScale = 0;
+
+    function transition3D(mode) {
+      if(mode === 'cardamom') {
+        cardamomGroup.visible = true;
+        targetCardamomScale = 1;
+        targetPepperScale = 0;
+      } else {
+        pepperGroup.visible = true;
+        targetPepperScale = 1;
+        targetCardamomScale = 0;
+      }
+    }
+
+
+    // ================= MOUSE PARALLAX =================
+    let mouseX = 0;
+    let mouseY = 0;
+    let targetCamX = 0;
+    let targetCamY = 0;
+
+    window.addEventListener('mousemove', (e) => {
+      mouseX = (e.clientX / window.innerWidth) * 2 - 1;
+      mouseY = -(e.clientY / window.innerHeight) * 2 + 1;
+    });
+
+
+    // ================= RESIZE HANDLING =================
+    window.addEventListener('resize', () => {
+      camera.aspect = window.innerWidth / window.innerHeight;
+      camera.updateProjectionMatrix();
+      renderer.setSize(window.innerWidth, window.innerHeight);
+    });
+
+    // ================= ANIMATION LOOP =================
+    const clock = new THREE.Clock();
+
+    function animate() {
+      requestAnimationFrame(animate);
+      const time = clock.getElapsedTime();
+
+      // Camera Parallax (Smooth follow mouse)
+      targetCamX = mouseX * 2;
+      targetCamY = mouseY * 1.5;
+      camera.position.x += (targetCamX - camera.position.x) * 0.05;
+      camera.position.y += (targetCamY - camera.position.y) * 0.05;
+      camera.lookAt(centerX*0.2, 0, 0); // Look slightly off-center
+
+      // Scale Transitions (Lerping for smooth hide/show)
+      cardamomGroup.scale.lerp(new THREE.Vector3(targetCardamomScale, targetCardamomScale, targetCardamomScale), 0.05);
+      pepperGroup.scale.lerp(new THREE.Vector3(targetPepperScale, targetPepperScale, targetPepperScale), 0.05);
+
+      // Hide completely if scaled down (optimization)
+      if(cardamomGroup.scale.x < 0.01) cardamomGroup.visible = false;
+      if(pepperGroup.scale.x < 0.01) pepperGroup.visible = false;
+
+      // Float & Rotate Cardamoms
+      if(cardamomGroup.visible) {
+        cardamoms.forEach(item => {
+          item.mesh.rotation.x += item.rxSpeed;
+          item.mesh.rotation.y += item.rySpeed;
+          item.mesh.position.y = item.baseY + Math.sin(time * item.floatSpeed) * item.floatAmp;
+        });
+        // Very slow group rotation
+        cardamomGroup.rotation.y = Math.sin(time * 0.1) * 0.2;
+      }
+
+      // Float & Rotate Peppers
+      if(pepperGroup.visible) {
+        peppers.forEach(item => {
+          item.mesh.rotation.x += item.rxSpeed;
+          item.mesh.rotation.y += item.rySpeed;
+          item.mesh.position.y = item.baseY + Math.sin(time * item.floatSpeed) * item.floatAmp;
+        });
+        // Very slow group rotation
+        pepperGroup.rotation.y = Math.cos(time * 0.1) * 0.2;
+      }
+
+      // Slowly rotate particle dust
+      particleMesh.rotation.y = time * 0.02;
+      particleMesh.rotation.x = Math.sin(time * 0.01) * 0.1;
+
+      renderer.render(scene, camera);
+    }
+
+    animate();
+  </script>
+</body>
+</html>
