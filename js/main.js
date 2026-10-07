@@ -25,7 +25,7 @@ import {
 } from './ui.js';
 import { clamp, lerp, prefersReducedMotion } from './lib.js';
 
-const SECTIONS = ['hero', 'story', 'origins', 'collection', 'process', 'standards', 'contact'];
+const SECTIONS = ['hero', 'story', 'origins', 'collection', 'process', 'standards', 'leadership', 'contact'];
 
 for (const id of SECTIONS) {
   const el = document.getElementById(id);

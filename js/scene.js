@@ -761,6 +761,12 @@ export function createStage({ canvas, products, initialId, onReady, onFrame }) {
    */
   function thumbnail(id, w = 132, h = 88) {
     const entry = clusters.get(id) || ensureCluster(id);
+
+    // A photo-backed cluster (star anise) paints black until its image has
+    // decoded. Returning null keeps the caller's retry loop alive instead of
+    // caching a black frame as the pill artwork for good.
+    if (typeof entry.notReady === 'function' && entry.notReady()) return null;
+
     const pw = w * 2;
     const ph = h * 2;
 

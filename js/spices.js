@@ -1386,7 +1386,111 @@ export function clusterSize(id) {
  * the silhouette stays even instead of clumping, then given independent drift
  * speeds for the idle animation.
  */
+/**
+ * The star anise is shown as a photograph rather than a solid.
+ *
+ * A star anise is so geometrically distinctive that a procedural build always
+ * reads as a toy — eight flat wedges with no bark texture. The client's own
+ * photo is the honest representation, so it is drawn into a rounded-corner
+ * canvas (with a thin leaf-green keyline) to read as a print floating in the
+ * stage rather than a rectangle pasted over it.
+ *
+ * The image loads async: until it lands the canvas is empty, which is why the
+ * thumbnail path retries.
+ */
+function photoTexture(src, size = 1024) {
+  const { c: canvas, ctx } = canvas2d(size);
+  const tex = new THREE.CanvasTexture(canvas);
+  tex.colorSpace = THREE.SRGBColorSpace;
+  tex.anisotropy = 8;
+
+  const roundRect = (x, y, w, h, rad) => {
+    ctx.beginPath();
+    ctx.moveTo(x + rad, y);
+    ctx.arcTo(x + w, y, x + w, y + h, rad);
+    ctx.arcTo(x + w, y + h, x, y + h, rad);
+    ctx.arcTo(x, y + h, x, y, rad);
+    ctx.arcTo(x, y, x + w, y, rad);
+    ctx.closePath();
+  };
+
+  const img = new Image();
+  img.decoding = 'async';
+  // Flag the texture until it has real pixels. thumbnail() reads this and
+  // returns null while the photo is still in flight, so the caller's retry loop
+  // keeps trying instead of caching a black frame forever.
+  tex.vavaReady = false;
+  img.onload = () => {
+    const rad = size * 0.05;
+    ctx.clearRect(0, 0, size, size);
+    ctx.save();
+    roundRect(0, 0, size, size, rad);
+    ctx.clip();
+    // Cover-fit so the photo fills the square without letterboxing.
+    const s = Math.max(size / img.width, size / img.height);
+    const w = img.width * s;
+    const h = img.height * s;
+    ctx.drawImage(img, (size - w) / 2, (size - h) / 2, w, h);
+    ctx.restore();
+
+    // Thin keyline so the edge of the print stays legible against the stage.
+    ctx.save();
+    ctx.strokeStyle = 'rgba(166,242,198,0.55)';
+    ctx.lineWidth = size * 0.007;
+    roundRect(size * 0.006, size * 0.006, size * 0.988, size * 0.988, rad);
+    ctx.stroke();
+    ctx.restore();
+
+    tex.needsUpdate = true;
+    tex.vavaReady = true;
+  };
+  img.src = src;
+  return tex;
+}
+
+/** The star anise cluster: one photographic print, gently adrift. */
+function createStarPhotoCluster() {
+  const group = new THREE.Group();
+  group.name = 'cluster-star';
+
+  const tex = photoTexture('assets/star-anise.jpg');
+  const mat = new THREE.MeshBasicMaterial({
+    map: tex,
+    transparent: true,
+    depthWrite: true,
+    toneMapped: false,
+    side: THREE.DoubleSide,
+  });  const SIZE = 3.5;
+  const mesh = new THREE.Mesh(new THREE.PlaneGeometry(SIZE, SIZE, 1, 1), mat);
+  // showProduct() drives every item's scale from userData.baseScale; without it
+  // the mesh is set to undefined and the plane silently stops rendering.
+  mesh.userData.baseScale = 1;
+  group.add(mesh);
+
+  return {
+    group,
+    items: [
+      {
+        mesh,
+        base: new THREE.Vector3(0, 0, 0),
+        // No spin: a rotating flat plane only advertises that it is flat.
+        spin: new THREE.Vector3(0, 0, 0),
+        bob: 0.6,
+        phase: 0,
+        amp: 0.1,
+        squash: 1,
+      },
+    ],
+    kind: 'star',
+    count: 1,
+    // Read by thumbnail(): a photo cluster renders black until its image has
+    // decoded, and a black frame must never be cached as the pill artwork.
+    notReady: () => tex.vavaReady !== true,
+  };
+}
+
 export function createCluster(id) {
+  if (id === 'star') return createStarPhotoCluster();
   const { geometry, material, materials, kind, scale, seed } = recipe(id);
   const group = new THREE.Group();
   group.name = `cluster-${id}`;
