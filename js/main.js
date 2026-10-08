@@ -18,6 +18,8 @@ import {
   initEnquiryForm,
   initAuthForm,
   initSwipe,
+  initPriceEditor,
+  initContactEditor,
   toast,
   inr,
   $,
@@ -310,6 +312,8 @@ async function boot() {
   initCounters();
   initEnquiryForm();
   initAuthForm();
+  initPriceEditor();
+  initContactEditor();
 
   const overlays = createOverlays();
   createMobileNav();
@@ -416,12 +420,27 @@ async function boot() {
   createScrollSpy(SECTIONS, { onScroll: () => pushScroll() });
 
   // Small handle for debugging and for driving the page from the console.
+  // In-memory contact snapshot for the details editor. The contact block in
+  // index.html is still static placeholder markup, so the editor edits this
+  // snapshot and then refreshes the DOM from it.
+  const contactDetails = [
+    ['Company', $('#contactCompany')?.textContent ?? 'Vava Spices (P) Ltd'],
+    ['Trading as', $('#contactTradingAs')?.textContent ?? 'Kollarmalil Spices since the 1980s'],
+    ['Based in', $('#contactBasedIn')?.textContent ?? 'Kerala, India'],
+    ['Email', $('#contactEmail')?.textContent ?? 'sales@vavaspices.example'],
+    ['Phone', $('#contactPhone')?.textContent ?? '+91 00000 00000'],
+  ];
+
   window.__vava = {
     get stage() {
       return stage;
     },
+    get activeId() {
+      return activeId;
+    },
     basket,
     catalog: CATALOG,
+    contactDetails,
     select: (id) => selectProduct(id, { fromScroll: true }),
     thumbs,
   };

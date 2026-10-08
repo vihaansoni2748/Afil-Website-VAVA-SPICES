@@ -834,40 +834,50 @@ const POD_RIBS = 10;
  */
 function buildCardamomPod({ length = 1, seed = 7, belly = 0.34 } = {}) {
   const noise = makeNoise3D(seed);
-  // Plumper than life: a strictly 2.6:1 pod silhouettes as a leaf, and the
-  // extra girth is what makes it read as a seed at a glance.
+  // A green cardamom pod is a plump closed capsule with a rounded blunt base,
+  // a fuller belly near the middle, a tapering seam side, and a short dry stalk
+  // at the base. Keep it plump: a strict 2.6:1 silhouette reads as a leaf, and
+  // the girth is what makes it read as a seed at a glance.
   const radius = 0.262 * length;
 
   const fn = (u, v, out) => {
     const th = u * TAU;
     const t = v;
 
-    // Silhouette. The stem end has to be BLUNT — a pod is a closed capsule
-    // with a beak, not a lens. A slow rise at the base (exponent 0.26 reaches
-    // 40% of full width in the first 5% of the length) keeps the bottom round
-    // while still closing the mesh at v = 0, so there is no open hole.
+    // Silhouette. Closed capsule, not a lens:
+    //  - blunt rounded base that reaches near-max width fast,
+    //  - fullest girth a little below the middle,
+    //  - long gentle taper toward the beak with a slightly softer seam side.
     let r;
     if (t < belly) {
-      r = Math.pow(t / belly, 0.26);
+      r = Math.pow(t / belly, 0.24);
+    } else if (t < 0.5) {
+      // Belly swell: full but not ballooning — hold near-max briefly past the
+      // midpoint, then start the taper toward the beak.
+      r = Math.pow(t / belly, 0.24) * (1 + 0.035 * Math.sin((t - belly) / (0.5 - belly) * Math.PI));
     } else {
       const k = (1 - t) / (1 - belly);
-      r = Math.pow(k, 0.92);
+      r = Math.pow(k, 0.9);
     }
+
+    // One long seam groove down the side of the pod.
+    const seamAngle = 0.42;
+    const seam = 1 - 0.028 * Math.pow(Math.sin((th - seamAngle) * 0.5), 2) * Math.pow(Math.sin(Math.PI * clamp(t * 0.98, 0, 1)), 0.5);
 
     // Ribs fade out towards both tips so the silhouette stays clean.
     const ribFade = Math.pow(Math.sin(Math.PI * clamp(t * 1.04, 0, 1)), 0.35);
     const ribPhase = th * POD_RIBS + t * 1.9;
-    r *= 1 + Math.cos(ribPhase) * 0.022 * ribFade;
+    r *= seam * (1 + Math.cos(ribPhase) * 0.02 * ribFade);
 
     // Organic asymmetry so no two reads are identical.
-    r *= 1 + noise(Math.cos(th) * 1.5, Math.sin(th) * 1.5, t * 3.1) * 0.035;
+    r *= 1 + noise(Math.cos(th) * 1.5, Math.sin(th) * 1.5, t * 3.1) * 0.032;
 
     const rr = r * radius;
     // Slight lateral flattening — real pods are not round.
-    const z = Math.sin(th) * rr * 0.95;
+    const z = Math.sin(th) * rr * 0.94;
     const x = Math.cos(th) * rr;
-    // Gentle banana bend down the spine.
-    const bend = Math.sin(t * Math.PI) * 0.05 * length + (t - 0.35) * 0.028 * length;
+    // Gentle natural curve: a soft bend toward the tip, not a hooked banana.
+    const bend = Math.sin(t * Math.PI * 0.92) * 0.045 * length + (t * t) * 0.02 * length;
     out[0] = x + bend;
     out[1] = (t - 0.5) * length;
     out[2] = z;

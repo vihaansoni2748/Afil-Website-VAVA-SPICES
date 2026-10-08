@@ -37,7 +37,7 @@
     <!-- ============================================================ -->
     <div class="preloader" id="preloader" role="status" aria-live="polite">
       <div class="preloader__inner">
-        <img class="preloader__mark" src="assets/logo-mark.png" alt="" width="96" height="96" />
+        <img class="preloader__mark" src="assets/logo-mark.png" alt="" width="96" height="93" />
         <div class="preloader__word">
           <span class="preloader__vava">VAVA</span>
           <span class="preloader__spices">Spices</span>
@@ -316,6 +316,22 @@
             <div class="pinfo__foot">
               <div class="price">
                 <b id="pPrice">₹1,850</b><span id="pUnit">per kg</span>
+                <button class="btn btn--ghost btn--tiny" type="button" id="priceEdit">Edit</button>
+              </div>
+              <div id="priceEditorPanel" hidden>
+                <p class="pinfo__editor-note">In-memory edit — changes are not saved anywhere yet.</p>
+                <div class="field">
+                  <label for="fPrice">Price</label>
+                  <input id="fPrice" name="price" type="text" inputmode="numeric" autocomplete="off" />
+                </div>
+                <div class="field">
+                  <label for="fPriceUnit">Unit</label>
+                  <input id="fPriceUnit" name="priceUnit" type="text" autocomplete="off" />
+                </div>
+                <div class="pinfo__editor-actions">
+                  <button class="btn btn--leaf" type="button" id="priceSave">Save</button>
+                  <button class="btn btn--ghost" type="button" id="priceCancel">Cancel</button>
+                </div>
               </div>
               <div class="pinfo__actions">
                 <button class="btn btn--leaf" type="button" id="pAdd">Add to enquiry</button>
@@ -521,12 +537,44 @@
 
             <!-- EDIT: replace these placeholder details with your real ones. -->
             <ul class="contact__details">
-              <li><span>Company</span><b>Vava Spices (P) Ltd</b></li>
-              <li><span>Trading as</span><b>Kollarmalil Spices since the 1980s</b></li>
-              <li><span>Based in</span><b>Kerala, India</b></li>
-              <li><span>Email</span><b>sales@vavaspices.example</b></li>
-              <li><span>Phone</span><b>+91 00000 00000</b></li>
+              <li><span>Company</span><b id="contactCompany">Vava Spices (P) Ltd</b></li>
+              <li><span>Trading as</span><b id="contactTradingAs">Kollarmalil Spices since the 1980s</b></li>
+              <li><span>Based in</span><b id="contactBasedIn">Kerala, India</b></li>
+              <li><span>Email</span><b id="contactEmail">sales@vavaspices.example</b></li>
+              <li><span>Phone</span><b id="contactPhone">+91 00000 00000</b></li>
             </ul>
+            <div class="contact__editor">
+              <button class="btn btn--outline" type="button" id="contactEdit">Edit details</button>
+              <div id="contactEditorPanel" hidden>
+                <p class="contact__editor-note">In-memory edit — changes are not saved anywhere yet.</p>
+                <div class="contact__editor-grid">
+                  <div class="field">
+                    <label for="fContactCompany">Company</label>
+                    <input id="fContactCompany" name="contactCompany" type="text" />
+                  </div>
+                  <div class="field">
+                    <label for="fContactTradingAs">Trading as</label>
+                    <input id="fContactTradingAs" name="contactTradingAs" type="text" />
+                  </div>
+                  <div class="field">
+                    <label for="fContactBasedIn">Based in</label>
+                    <input id="fContactBasedIn" name="contactBasedIn" type="text" />
+                  </div>
+                  <div class="field">
+                    <label for="fContactEmail">Email</label>
+                    <input id="fContactEmail" name="contactEmail" type="email" />
+                  </div>
+                  <div class="field">
+                    <label for="fContactPhone">Phone</label>
+                    <input id="fContactPhone" name="contactPhone" type="text" />
+                  </div>
+                </div>
+                <div class="contact__editor-actions">
+                  <button class="btn btn--leaf" type="button" id="contactSave">Save</button>
+                  <button class="btn btn--ghost" type="button" id="contactCancel">Cancel</button>
+                </div>
+              </div>
+            </div>
           </div>
 
           <form class="contact__form reveal" data-reveal id="enquiryForm" novalidate>

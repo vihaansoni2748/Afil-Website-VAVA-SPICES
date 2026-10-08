@@ -610,3 +610,191 @@ export function initSwipe(host, { onNext, onPrev }) {
 }
 
 export { $ , $$ };
+
+/* ======================================================================== */
+/*  Details editor (in-memory, page session only)                           */
+/* ======================================================================== */
+
+/**
+ * Open or close the contact details editor.
+ *
+ * This is intentionally in-memory: it edits a snapshot that the page keeps in
+ * memory and then refreshes the contact block from it. There is no server
+ * write in this version.
+ */
+export function initContactEditor() {
+  const openBtn = $('#contactEdit');
+  const panel = $('#contactEditorPanel');
+  const saveBtn = $('#contactSave');
+  const cancelBtn = $('#contactCancel');
+
+  if (!openBtn || !panel || !saveBtn || !cancelBtn) return;
+
+  // Pull fresh values from the live DOM each time the editor opens, so the
+  // editor always starts from what is currently shown.
+  function fillFromDOM() {
+    $('#fContactCompany').value = $('#contactCompany')?.textContent ?? '';
+    $('#fContactTradingAs').value = $('#contactTradingAs')?.textContent ?? '';
+    $('#fContactBasedIn').value = $('#contactBasedIn')?.textContent ?? '';
+    $('#fContactEmail').value = $('#contactEmail')?.textContent ?? '';
+    $('#fContactPhone').value = $('#contactPhone')?.textContent ?? '';
+  }
+
+  function open() {
+    fillFromDOM();
+    panel.hidden = false;
+    openBtn.hidden = true;
+    // Focus the first field so keyboard users land inside the form.
+    window.setTimeout(() => $('#fContactCompany')?.focus(), 0);
+  }
+
+  function close() {
+    panel.hidden = true;
+    openBtn.hidden = false;
+  }
+
+  openBtn.addEventListener('click', () => {
+    if (panel.hidden) open();
+    else close();
+  });
+
+  cancelBtn.addEventListener('click', close);
+
+  saveBtn.addEventListener('click', () => {
+    const company = $('#fContactCompany').value.trim();
+    const tradingAs = $('#fContactTradingAs').value.trim();
+    const basedIn = $('#fContactBasedIn').value.trim();
+    const email = $('#fContactEmail').value.trim();
+    const phone = $('#fContactPhone').value.trim();
+
+    // Nothing to save if every field is unchanged from the existing values.
+    if (
+      company === $('#contactCompany')?.textContent &&
+      tradingAs === $('#contactTradingAs')?.textContent &&
+      basedIn === $('#contactBasedIn')?.textContent &&
+      email === $('#contactEmail')?.textContent &&
+      phone === $('#contactPhone')?.textContent
+    ) {
+      close();
+      return;
+    }
+
+    const target = window.__vava?.contactDetails;
+    if (!target) {
+      toast('Details editor isn\'t wired in on this page yet.');
+      return;
+    }
+
+    // Update the in-memory snapshot.
+    target[0][1] = company || target[0][1];
+    target[1][1] = tradingAs || target[1][1];
+    target[2][1] = basedIn || target[2][1];
+    target[3][1] = email || target[3][1];
+    target[4][1] = phone || target[4][1];
+
+    // Refresh the live contact block from the same snapshot.
+    $('#contactCompany').textContent = target[0][1];
+    $('#contactTradingAs').textContent = target[1][1];
+    $('#contactBasedIn').textContent = target[2][1];
+    $('#contactEmail').textContent = target[3][1];
+    $('#contactPhone').textContent = target[4][1];
+
+    close();
+    toast('Contact details updated for this session.');
+  });
+}
+
+/**
+ * Refresh the price/editor-safe product panel fields for the current product.
+ *
+ * This is the hook the price editor uses: it reads the active catalog entry,
+ * formats the price, and updates the price block without re-rendering the rest
+ * of the panel.
+ */
+export function refreshPricePanel() {
+  const activeId = window.__vava?.activeId;
+  if (!activeId) return;
+
+  const product = window.__vava?.catalog?.find((p) => p.id === activeId);
+  if (!product) return;
+
+  const priceEl = $('#pPrice');
+  const unitEl = $('#pUnit');
+  if (!priceEl || !unitEl) return;
+
+  priceEl.textContent = inr(product.price);
+  unitEl.textContent = product.unit;
+}
+
+/**
+ * Open or close the active-product price editor.
+ *
+ * Kept deliberately narrow for this demo: edit the price, optionally the unit,
+ * cancel or save back into the catalog in memory.
+ */
+export function initPriceEditor() {
+  const openBtn = $('#priceEdit');
+  const panel = $('#priceEditorPanel');
+  const saveBtn = $('#priceSave');
+  const cancelBtn = $('#priceCancel');
+
+  if (!openBtn || !panel || !saveBtn || !cancelBtn) return;
+
+  const catalog = window.__vava?.catalog;
+  if (!catalog) return;
+
+  function activeProduct() {
+    const id = window.__vava?.activeId;
+    return id ? catalog.find((p) => p.id === id) : catalog[0] ?? null;
+  }
+
+  function fillFromProduct() {
+    const p = activeProduct();
+    if (!p) return;
+    $('#fPrice').value = String(p.price);
+    $('#fPriceUnit').value = p.unit ?? '';
+  }
+
+  function open() {
+    fillFromProduct();
+    panel.hidden = false;
+    openBtn.hidden = true;
+    window.setTimeout(() => $('#fPrice')?.focus(), 0);
+  }
+
+  function close() {
+    panel.hidden = true;
+    openBtn.hidden = false;
+  }
+
+  openBtn.addEventListener('click', () => {
+    if (panel.hidden) open();
+    else close();
+  });
+
+  cancelBtn.addEventListener('click', close);
+
+  saveBtn.addEventListener('click', () => {
+    const raw = $('#fPrice').value.trim();
+    const product = activeProduct();
+    if (!product) return;
+
+    const parsed = Number(raw.replace(/[^\d.\-]/g, ''));
+    if (!Number.isFinite(parsed) || parsed <= 0) {
+      toast('Enter a valid price.');
+      return;
+    }
+
+    const unit = $('#fPriceUnit').value.trim() || product.unit;
+
+    // In-memory update only.
+    product.price = Math.round(parsed);
+    product.unit = unit;
+
+    // Refresh the live price block and the panel text.
+    refreshPricePanel();
+    close();
+    toast(`Price updated for ${product.name}.`);
+  });
+}
+
