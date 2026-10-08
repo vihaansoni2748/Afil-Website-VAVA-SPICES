@@ -9,6 +9,7 @@ Usage:  python tools/dev_server.py [port]
 """
 
 import base64
+import os
 import sys
 from functools import partial
 from http.server import SimpleHTTPRequestHandler, ThreadingHTTPServer
@@ -68,8 +69,10 @@ class Handler(SimpleHTTPRequestHandler):
 
 
 if __name__ == "__main__":
-    port = int(sys.argv[1]) if len(sys.argv) > 1 else 8125
+    # `or 8125`: an empty PORT (set but blank) must fall back, not raise ValueError.
+    port = int(sys.argv[1]) if len(sys.argv) > 1 else int(os.environ.get("PORT") or 8125)
+    host = os.environ.get("HOST", "0.0.0.0")
     handler = partial(Handler, directory=str(ROOT))
-    print(f"dev server on http://127.0.0.1:{port}/  ->  {ROOT}")
+    print(f"dev server on http://{host}:{port}/  ->  {ROOT}")
     print(f"captures POST to /dump/<name>  ->  {OUT}")
-    ThreadingHTTPServer(("127.0.0.1", port), handler).serve_forever()
+    ThreadingHTTPServer((host, port), handler).serve_forever()
